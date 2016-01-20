@@ -19,10 +19,12 @@ class SyncServer(val port: Int = 8080) {
             while (true) {
                 serverSocket.accept().use { socket ->
                     val input = BufferedReader(InputStreamReader(socket.inputStream, "UTF-8"))
-                    val out = BufferedWriter(OutputStreamWriter(socket.outputStream))
                     val request = IOUtil.readStream(input)
                     val httpRequest = HttpUtil.parseHttpRequest(request)
-                    writeResponse("Hello world!", out)
+                    println(httpRequest)
+                    BufferedWriter(OutputStreamWriter(socket.outputStream)).use { out ->
+                        writeResponse("Hello world!", out)
+                    }
                 }
             }
         }
@@ -31,6 +33,5 @@ class SyncServer(val port: Int = 8080) {
     fun writeResponse(response: String, out: BufferedWriter) {
         out.write("\r\n")
         out.write(response)
-        out.close()
     }
 }
