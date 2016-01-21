@@ -12,8 +12,10 @@ buildscript {
     }
 }
 
+apply plugin: "application"
 apply plugin: "kotlin"
-apply plugin: 'kotlin' // or apply plugin: "kotlin2js" if targeting JavaScript
+
+mainClassName = "by.westside.staircase.app.AppKt"
 
 repositories {
     mavenCentral()

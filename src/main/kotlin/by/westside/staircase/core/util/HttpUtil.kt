@@ -31,5 +31,7 @@ fun parseHeader(header: String): Pair<String, String> {
 }
 
 fun parseBody(bodyStrings: List<String>): String {
-    return bodyStrings.reduce { body, s -> body + "\n" + s }
+    if(bodyStrings.isEmpty()) {
+        return "";
+    } else { return bodyStrings.reduce { body, s -> body + "\n" + s } }
 }
