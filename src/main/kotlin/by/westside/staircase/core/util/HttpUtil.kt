@@ -14,7 +14,7 @@ object HttpUtil {
         run breaker@ {
             (1..separatedLines.size - 1).forEach { index ->
                 if (separatedLines.get(index).isBlank()) {
-                    body = parseBody(separatedLines.subList(index + 1, separatedLines.size)ead
+                    body = parseBody(separatedLines.subList(index + 1, separatedLines.size))
                     return@breaker
                 }
                 val header = parseHeader(separatedLines.get(index))
