@@ -17,7 +17,7 @@ class SyncServer(val port: Int = 80, val threadsCount: Int) : Runnable {
         start()
     }
 
-    fun start() {
+    private fun start() {
         println("$port port is listening by staircase")
         (1..threadsCount).forEach {
             Thread(ServerThread(serverSocket, it)).start()

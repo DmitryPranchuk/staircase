@@ -1,28 +1,56 @@
 package by.westside.staircase.core.util
 
+import by.westside.staircase.core.exception.RequestFormatException
 import by.westside.staircase.core.http.request.HttpRequest
+import by.westside.staircase.core.http.request.HttpVersion
+import by.westside.staircase.core.http.request.RequestType
 import java.util.*
 
 /**
  * Created by d.pranchuk on 1/20/16.
  */
 object HttpUtil {
+
     fun parseHttpRequest(stringRequest: String): HttpRequest {
         var headers = HashMap<String, String>()
         val separatedLines = stringRequest.split(System.getProperty("line.separator"))
+        val firstLineParams = separatedLines[0].split(delimiters = " ", limit = 3)
+        if (firstLineParams.any { it.isBlank() }) {
+            throw RequestFormatException("Incorrect first line: ${separatedLines[0]}")
+        }
+        val requestType = parseRequestType(firstLineParams[0])
+        val httpVersion = parseHttpVersion(firstLineParams[2])
         var body = ""
         run breaker@ {
             (1..separatedLines.size - 1).forEach { index ->
-                if (separatedLines.get(index).isBlank()) {
+                if (separatedLines[index].isBlank()) {
                     body = parseBody(separatedLines.subList(index + 1, separatedLines.size))
                     return@breaker
                 }
-                val header = parseHeader(separatedLines.get(index))
+                val header = parseHeader(separatedLines[index])
                 headers.put(header.first, header.second)
             }
         }
-        return HttpRequest(headers, body, separatedLines.first())
+        return HttpRequest(headers, body, requestType, httpVersion, firstLineParams[1])
     }
+}
+
+fun parseRequestType(requestType: String): RequestType {
+    if (!RequestType.values().map { it.name }.contains(requestType)) {
+        throw RequestFormatException("Unknown request type $requestType")
+    }
+    return RequestType.valueOf(requestType)
+}
+
+fun parseHttpVersion(httpVersionString: String): HttpVersion {
+    var httpVersion = HttpVersion.UNKNOWN
+    HttpVersion.values() .forEach {
+        if (httpVersionString.equals(it.value)) httpVersion = it
+    }
+    if (httpVersion == HttpVersion.UNKNOWN) {
+        throw RequestFormatException("Unknown HTTP version $httpVersionString")
+    }
+    return httpVersion
 }
 
 fun parseHeader(header: String): Pair<String, String> {
@@ -31,7 +59,9 @@ fun parseHeader(header: String): Pair<String, String> {
 }
 
 fun parseBody(bodyStrings: List<String>): String {
-    if(bodyStrings.isEmpty()) {
+    if (bodyStrings.isEmpty()) {
         return "";
-    } else { return bodyStrings.reduce { body, s -> body + "\n" + s } }
+    } else {
+        return bodyStrings.reduce { body, s -> body + "\n" + s }
+    }
 }
