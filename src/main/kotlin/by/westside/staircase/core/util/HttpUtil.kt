@@ -4,6 +4,7 @@ import by.westside.staircase.core.exception.RequestFormatException
 import by.westside.staircase.core.http.request.HttpRequest
 import by.westside.staircase.core.http.request.HttpVersion
 import by.westside.staircase.core.http.request.RequestType
+import by.westside.staircase.core.http.response.HttpResponse
 import java.util.*
 
 /**
@@ -32,6 +33,20 @@ object HttpUtil {
             }
         }
         return HttpRequest(headers, body, requestType, httpVersion, firstLineParams[1])
+    }
+
+    fun composeHttpResponse(httpResponse: HttpResponse) : String {
+        val firstLine = "${httpResponse.httpVersion.value} ${httpResponse.responseCode} ${httpResponse.responseStatus}\r\n"
+        var response = firstLine
+        httpResponse.headers.forEach {
+            response += "${it.key}: ${it.value}\r\n"
+        }
+        if(!httpResponse.body.isBlank()) {
+            response += "Content-Length: ${httpResponse.body.length}\r\n"
+            response += "\r\n"
+            response += httpResponse.body
+        }
+        return response
     }
 }
 

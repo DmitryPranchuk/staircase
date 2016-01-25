@@ -1,6 +1,8 @@
 package by.westside.staircase.core.server
 
 import by.westside.staircase.core.http.request.RequestType
+import by.westside.staircase.core.http.response.HttpResponse
+import by.westside.staircase.core.http.response.ResponseStatus
 import java.net.ServerSocket
 import java.util.*
 
@@ -24,8 +26,11 @@ class SyncServer(val port: Int = 80, val threadsCount: Int) : Runnable {
         listeners.add(serverListener)
     }
 
-    fun getListener(path: String, requestType: RequestType): ServerListener? {
-        return listeners.find { it.getPath().equals(path) && it.getRequestType().equals(requestType) }
+    fun getListener(path: String, requestType: RequestType): ServerListener {
+        return listeners.find { it.path.equals(path) && it.requestType.equals(requestType) }
+                ?: ServerListener("", RequestType.GET, { request ->
+            HttpResponse(request.httpVersion, ResponseStatus.OK, 200) }
+        )
     }
 
     private fun start() {
