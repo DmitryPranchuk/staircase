@@ -6,18 +6,17 @@ import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
-import java.net.ServerSocket
 import java.net.Socket
 import java.util.*
 
 /**
  * Created by d.pranchuk on 1/22/16.
  */
-class ServerThread(val serverSocket: ServerSocket, val threadId: Int) : Runnable {
+class ServerThread(val threadId: Int, val syncServer: SyncServer) : Runnable {
 
     override fun run() {
         println("thread $threadId started")
-        serverSocket.use { serverSocket ->
+        syncServer.serverSocket.use { serverSocket ->
             while (true) {
                 serverSocket.accept().use { socket ->
                     val start = Date().time
@@ -25,10 +24,10 @@ class ServerThread(val serverSocket: ServerSocket, val threadId: Int) : Runnable
                     val request = IOUtil.readStream(input)
                     val httpRequest = HttpUtil.parseHttpRequest(request)
                     println(httpRequest)
-
+                    val serverListener = syncServer.getListener(httpRequest.path, httpRequest.requestType)
+                    val response = serverListener?.processRequest(httpRequest)
                     BufferedWriter(OutputStreamWriter(socket.outputStream)).use { out ->
-                        //                        writeResponse("Hello!", out)
-                        writeLoaderIo(socket)
+                        writeResponse(response ?: "not found", out)
                     }
                     println("processed for ${Date().time - start} ms by thread $threadId")
                 }

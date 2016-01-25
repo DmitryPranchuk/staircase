@@ -15,7 +15,7 @@ object HttpUtil {
         var headers = HashMap<String, String>()
         val separatedLines = stringRequest.split(System.getProperty("line.separator"))
         val firstLineParams = separatedLines[0].split(delimiters = " ", limit = 3)
-        if (firstLineParams.any { it.isBlank() }) {
+        if (firstLineParams.count() != 3 || firstLineParams.any { it.isBlank() }) {
             throw RequestFormatException("Incorrect first line: ${separatedLines[0]}")
         }
         val requestType = parseRequestType(firstLineParams[0])
