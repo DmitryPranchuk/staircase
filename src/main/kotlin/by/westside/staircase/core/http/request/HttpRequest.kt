@@ -8,5 +8,4 @@ data class HttpRequest(
         val body: String,
         val requestType: RequestType,
         val httpVersion: HttpVersion,
-        val path: String) {
-}
+        val path: String)

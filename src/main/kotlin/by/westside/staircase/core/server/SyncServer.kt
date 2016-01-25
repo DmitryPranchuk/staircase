@@ -12,13 +12,9 @@ import java.util.*
 class SyncServer(val port: Int = 80, val threadsCount: Int) : Runnable {
 
     val serverSocket = ServerSocket(port)
-    private var thread: Thread? = null
-    private var listeners = ArrayList<ServerListener>()
+    private val listeners = ArrayList<ServerListener>()
 
     override fun run() {
-        synchronized(this) {
-            thread = Thread.currentThread()
-        }
         start()
     }
 
