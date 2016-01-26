@@ -10,7 +10,7 @@ import java.util.*
 /**
  * Created by d.pranchuk on 1/20/16.
  */
-object HttpUtil {
+internal  object HttpUtil {
 
     fun parseHttpRequest(stringRequest: String): HttpRequest {
         var headers = HashMap<String, String>()

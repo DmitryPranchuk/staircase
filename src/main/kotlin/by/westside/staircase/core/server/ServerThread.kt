@@ -14,20 +14,13 @@ import java.net.Socket
 /**
  * Created by d.pranchuk on 1/22/16.
  */
-class ServerThread(val threadId: Int, val syncServer: SyncServer) : Runnable {
+internal class ServerThread(val socket: Socket, val syncServer: SyncServer) : Runnable {
 
     override fun run() {
-        println("thread $threadId started")
-        syncServer.serverSocket.use { serverSocket ->
-            while (true) {
-                serverSocket.accept().use { socket ->
-                    val executionTime = executionTime {
-                        acceptConnection(socket)
-                    }
-                    println("executed for $executionTime ms by $threadId thread")
-                }
-            }
+        val executionTime = executionTime {
+            acceptConnection(socket)
         }
+        println("executed for $executionTime ms")
     }
 
     private fun acceptConnection(socket: Socket) {
@@ -35,7 +28,7 @@ class ServerThread(val threadId: Int, val syncServer: SyncServer) : Runnable {
             val httpRequest = getRequest(socket)
             println(httpRequest)
             processRequest(httpRequest, socket)
-        } catch(e : StaircaseException) {
+        } catch(e: StaircaseException) {
             println(e)
         }
     }
@@ -58,9 +51,4 @@ class ServerThread(val threadId: Int, val syncServer: SyncServer) : Runnable {
         out.write(response)
     }
 
-    private fun writeLoaderIo(socket: Socket) {
-        val token = "loaderio-92dba1a89b55cf86eb150e1ecf14aee0"
-        socket.outputStream.write(token.toByteArray(), 0, token.length)
-        socket.outputStream.flush()
-    }
 }

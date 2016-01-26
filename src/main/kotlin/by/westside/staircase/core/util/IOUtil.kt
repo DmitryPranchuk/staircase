@@ -7,7 +7,7 @@ import java.util.*
 /**
  * Created by d.pranchuk on 1/20/16.
  */
-object IOUtil {
+internal object IOUtil {
     fun readStream(input: BufferedReader): String {
         var result = ""
         var contentLength = 0

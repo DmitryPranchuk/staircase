@@ -5,11 +5,12 @@ import by.westside.staircase.core.http.response.HttpResponse
 import by.westside.staircase.core.http.response.ResponseStatus
 import java.net.ServerSocket
 import java.util.*
+import java.util.concurrent.Executors
 
 /**
  * Created by d.pranchuk on 1/20/16.c
  */
-class SyncServer(val port: Int = 80, val threadsCount: Int) : Runnable {
+class SyncServer(val port: Int = 80) : Runnable {
 
     val serverSocket = ServerSocket(port)
     private val listeners = ArrayList<ServerListener>()
@@ -25,14 +26,17 @@ class SyncServer(val port: Int = 80, val threadsCount: Int) : Runnable {
     fun getListener(path: String, requestType: RequestType): ServerListener {
         return listeners.find { it.path.equals(path) && it.requestType.equals(requestType) }
                 ?: ServerListener("", RequestType.GET, { request ->
-            HttpResponse(request.httpVersion, ResponseStatus.NOT_FOUND, "<h1>NOT FOUND</h1>") }
+            HttpResponse(request.httpVersion, ResponseStatus.NOT_FOUND, "<h1>NOT FOUND</h1>")
+        }
         )
     }
 
     private fun start() {
         println("$port port is listening by staircase")
-        (1..threadsCount).forEach {
-            Thread(ServerThread(it, this)).start()
+        val pool = Executors.newCachedThreadPool()
+        while (true) {
+            val socket = serverSocket.accept()
+            pool.execute(ServerThread(socket, this))
         }
     }
 }
