@@ -9,6 +9,5 @@ import java.util.*
  */
 data class HttpResponse(val httpVersion: HttpVersion,
                         val responseStatus: ResponseStatus,
-                        val responseCode: Int,
                         val body: String = String(),
                         val headers: Map<String, String> = HashMap<String, String>())

@@ -15,7 +15,6 @@ fun main(args: Array<String>) {
     syncServer.registerListener(ServerListener("/hello", RequestType.GET, { request ->
         HttpResponse(httpVersion = request.httpVersion,
                 responseStatus = ResponseStatus.OK,
-                responseCode = 200,
                 body = "Hello! Now is ${Date().time}")
     }))
     Thread(syncServer).start()

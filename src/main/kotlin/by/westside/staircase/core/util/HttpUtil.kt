@@ -36,7 +36,7 @@ object HttpUtil {
     }
 
     fun composeHttpResponse(httpResponse: HttpResponse) : String {
-        val firstLine = "${httpResponse.httpVersion.value} ${httpResponse.responseCode} ${httpResponse.responseStatus}\r\n"
+        val firstLine = "${httpResponse.httpVersion.value} ${httpResponse.responseStatus.code} ${httpResponse.responseStatus.value}\r\n"
         var response = firstLine
         httpResponse.headers.forEach {
             response += "${it.key}: ${it.value}\r\n"
