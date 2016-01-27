@@ -6,9 +6,9 @@ Example of using:
 ```kotlin
 val port = 9000
 val syncServer = startSyncServer(port)
-syncServer.registerListener(ServerListener("/hello", RequestType.GET, { request ->
-    HttpResponse(request.httpVersion, ResponseStatus.OK, "Hello from staircase!")
-}))
+syncServer.registerListener("/hello", RequestType.GET, { request ->
+    HttpResponse("Hello from staircase!")
+})
 ```
 Request <br/>
 ``` bash

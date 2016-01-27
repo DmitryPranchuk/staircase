@@ -2,6 +2,8 @@ package by.westside.staircase.core.server
 
 import by.westside.staircase.core.exception.StaircaseException
 import by.westside.staircase.core.http.request.HttpRequest
+import by.westside.staircase.core.http.response.HttpResponse
+import by.westside.staircase.core.http.response.ResponseStatus
 import by.westside.staircase.core.util.HttpUtil
 import by.westside.staircase.core.util.IOUtil
 import by.westside.staircase.core.util.executionTime
@@ -15,6 +17,8 @@ import java.net.Socket
  * Created by d.pranchuk on 1/22/16.
  */
 internal class ServerThread(val socket: Socket, val syncServer: SyncServer) : Runnable {
+
+    private var isResponded = false
 
     override fun run() {
         val executionTime = executionTime {
@@ -30,15 +34,22 @@ internal class ServerThread(val socket: Socket, val syncServer: SyncServer) : Ru
             processRequest(httpRequest, socket)
         } catch(e: StaircaseException) {
             println(e)
+            if(!isResponded) {
+                writeHttpResponse(socket, HttpResponse(body = "Server Error", responseStatus = ResponseStatus.INTERNAL_SERVER_ERROR))
+            }
         }
     }
 
     private fun processRequest(httpRequest: HttpRequest, socket: Socket) {
         val serverListener = syncServer.getListener(httpRequest.path, httpRequest.requestType)
-        val response = serverListener.process(httpRequest)
+        val response = serverListener(httpRequest)
         val processedResponse = response.setHttpVersionIfUnknown(httpRequest.httpVersion)
+        writeHttpResponse(socket, processedResponse)
+    }
+
+    private fun writeHttpResponse(socket: Socket, httpResponse: HttpResponse) {
         BufferedWriter(OutputStreamWriter(socket.outputStream)).use { out ->
-            writeResponse(HttpUtil.composeHttpResponse(processedResponse), out)
+            writeResponse(HttpUtil.composeHttpResponse(httpResponse), out)
         }
     }
 
@@ -50,6 +61,7 @@ internal class ServerThread(val socket: Socket, val syncServer: SyncServer) : Ru
 
     private fun writeResponse(response: String, out: BufferedWriter) {
         out.write(response)
+        isResponded = true
     }
 
 }
