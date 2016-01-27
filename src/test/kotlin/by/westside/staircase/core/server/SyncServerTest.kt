@@ -24,6 +24,22 @@ class SyncServerTest : Spek() { init {
             it("should return correct response") {
                 assertEquals(returnedString, response)
             }
+            server.stop()
+        }
+    }
+
+    given("Server listens $port port with simple listener on /hello GET") {
+        val server = startSyncServer(port)
+        val returnedString = "Hello World!"
+        server.registerListener("/hello", RequestType.GET, { request ->
+            returnedString
+        })
+        on("GET request on /hello") {
+            val response = URL("http://localhost:$port/hello").readText()
+            it("should return correct response") {
+                assertEquals(returnedString, response)
+            }
+            server.stop()
         }
     }
 }

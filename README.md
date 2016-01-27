@@ -7,7 +7,7 @@ Example of using:
 val port = 9000
 val syncServer = startSyncServer(port)
 syncServer.registerListener("/hello", RequestType.GET, { request ->
-    HttpResponse("Hello from staircase!")
+    "Hello from staircase!"
 })
 ```
 Request <br/>

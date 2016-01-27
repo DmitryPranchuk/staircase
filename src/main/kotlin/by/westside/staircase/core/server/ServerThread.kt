@@ -34,7 +34,7 @@ internal class ServerThread(val socket: Socket, val syncServer: SyncServer) : Ru
             processRequest(httpRequest, socket)
         } catch(e: StaircaseException) {
             println(e)
-            if(!isResponded) {
+            if (!isResponded) {
                 writeHttpResponse(socket, HttpResponse(body = "Server Error", responseStatus = ResponseStatus.INTERNAL_SERVER_ERROR))
             }
         }
@@ -43,8 +43,18 @@ internal class ServerThread(val socket: Socket, val syncServer: SyncServer) : Ru
     private fun processRequest(httpRequest: HttpRequest, socket: Socket) {
         val serverListener = syncServer.getListener(httpRequest.path, httpRequest.requestType)
         val response = serverListener(httpRequest)
-        val processedResponse = response.setHttpVersionIfUnknown(httpRequest.httpVersion)
+        val processedResponse = processResponse(response, httpRequest)
         writeHttpResponse(socket, processedResponse)
+    }
+
+    private fun processResponse(response: Any, httpRequest: HttpRequest): HttpResponse {
+        return when (response) {
+            is String -> HttpResponse(body = response, responseStatus = ResponseStatus.OK, httpVersion = httpRequest.httpVersion)
+            is HttpResponse -> {
+                response.setHttpVersionIfUnknown(httpRequest.httpVersion)
+            }
+            else -> HttpResponse(body = response.toString(), responseStatus = ResponseStatus.OK, httpVersion = httpRequest.httpVersion)
+        }
     }
 
     private fun writeHttpResponse(socket: Socket, httpResponse: HttpResponse) {

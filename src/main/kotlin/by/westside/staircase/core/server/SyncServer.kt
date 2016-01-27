@@ -6,6 +6,7 @@ import by.westside.staircase.core.http.request.RequestType
 import by.westside.staircase.core.http.response.HttpResponse
 import by.westside.staircase.core.http.response.ResponseStatus
 import java.net.ServerSocket
+import java.net.SocketException
 import java.util.*
 import java.util.concurrent.Executors
 
@@ -15,13 +16,21 @@ import java.util.concurrent.Executors
 class SyncServer(val port: Int = 80) : Runnable {
 
     val serverSocket = ServerSocket(port)
-    private val listeners = HashMap<Method, (HttpRequest) -> HttpResponse>()
+    private var isRunning = true
+    private val pool = Executors.newCachedThreadPool()
+    private val listeners = HashMap<Method, (HttpRequest) -> Any>()
 
     override fun run() {
         start()
     }
 
-    fun registerListener(path: String, requestType: RequestType, callback: (HttpRequest) -> HttpResponse) {
+    fun stop() {
+        isRunning = false
+        pool.shutdown()
+        serverSocket.close()
+    }
+
+    fun registerListener(path: String, requestType: RequestType, callback: (HttpRequest) -> Any) {
         if (listeners.get(Method(path, requestType)) == null) {
             listeners.put(Method(path, requestType), callback)
         } else {
@@ -29,7 +38,7 @@ class SyncServer(val port: Int = 80) : Runnable {
         }
     }
 
-    internal fun getListener(path: String, requestType: RequestType): (HttpRequest) -> HttpResponse {
+    internal fun getListener(path: String, requestType: RequestType): (HttpRequest) -> Any {
         return listeners.get(Method(path, requestType)) ?: { request ->
             HttpResponse(responseStatus = ResponseStatus.NOT_FOUND, body = "<h1>NOT FOUND</h1>")
         }
@@ -37,10 +46,13 @@ class SyncServer(val port: Int = 80) : Runnable {
 
     private fun start() {
         println("$port port is listening by staircase")
-        val pool = Executors.newCachedThreadPool()
-        while (true) {
-            val socket = serverSocket.accept()
-            pool.execute(ServerThread(socket, this))
+        while (isRunning) {
+            try {
+                val socket = serverSocket.accept()
+                pool.execute(ServerThread(socket, this))
+            } catch(e: SocketException) {
+            }
         }
+        println("Server was stopped")
     }
 }
