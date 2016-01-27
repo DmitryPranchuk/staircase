@@ -36,8 +36,9 @@ internal class ServerThread(val socket: Socket, val syncServer: SyncServer) : Ru
     private fun processRequest(httpRequest: HttpRequest, socket: Socket) {
         val serverListener = syncServer.getListener(httpRequest.path, httpRequest.requestType)
         val response = serverListener.process(httpRequest)
+        val processedResponse = response.setHttpVersionIfUnknown(httpRequest.httpVersion)
         BufferedWriter(OutputStreamWriter(socket.outputStream)).use { out ->
-            writeResponse(HttpUtil.composeHttpResponse(response), out)
+            writeResponse(HttpUtil.composeHttpResponse(processedResponse), out)
         }
     }
 
