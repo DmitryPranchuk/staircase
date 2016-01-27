@@ -2,7 +2,6 @@ package by.westside.staircase.core.server
 
 import by.westside.staircase.core.http.request.RequestType
 import by.westside.staircase.core.http.response.HttpResponse
-import by.westside.staircase.core.http.response.ResponseStatus
 import org.jetbrains.spek.api.Spek
 import java.net.URL
 import kotlin.test.assertEquals
@@ -18,7 +17,7 @@ class SyncServerTest : Spek() { init {
         val server = startSyncServer(port)
         val returnedString = "Hello World!"
         server.registerListener(ServerListener("/hello", RequestType.GET, { request ->
-            HttpResponse(request.httpVersion, ResponseStatus.OK, returnedString)
+            HttpResponse(returnedString)
         }))
         on("GET request on /hello") {
             val response = URL("http://localhost:$port/hello").readText()

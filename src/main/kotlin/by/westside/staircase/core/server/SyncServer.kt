@@ -26,7 +26,7 @@ class SyncServer(val port: Int = 80) : Runnable {
     fun getListener(path: String, requestType: RequestType): ServerListener {
         return listeners.find { it.path.equals(path) && it.requestType.equals(requestType) }
                 ?: ServerListener("", RequestType.GET, { request ->
-            HttpResponse(request.httpVersion, ResponseStatus.NOT_FOUND, "<h1>NOT FOUND</h1>")
+            HttpResponse(responseStatus = ResponseStatus.NOT_FOUND, body = "<h1>NOT FOUND</h1>")
         }
         )
     }
