@@ -18,9 +18,10 @@ class HttpUtilTest : Spek() {init {
         on("httpRequest parsing") {
             fun parsing() = HttpUtil.parseHttpRequest(badRequest)
             it("should throw exception") {
-                val e = shouldThrow(RequestFormatException::class.java, { parsing() }  )
+                val e = shouldThrow(RequestFormatException::class.java, { parsing() })
                 assertEquals("Incorrect first line: INCORRECT LINE", e.message)
             }
         }
     }
-}}
+}
+}

@@ -1,8 +1,6 @@
 package by.westside.staircase.core.util
 
-import com.sun.deploy.util.StringUtils
 import java.io.BufferedReader
-import java.util.*
 
 /**
  * Created by d.pranchuk on 1/20/16.
