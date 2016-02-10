@@ -23,7 +23,7 @@ For custom request type:
 ```kotlin
 val port = 9000
 val syncServer = startSyncServer(port)
-syncServer.registerListener("/hello", WRequestType.PATCH, { request ->
+syncServer.registerListener("/hello", RequestType.PATCH, { request ->
     "Hello from staircase!"
 })
 
