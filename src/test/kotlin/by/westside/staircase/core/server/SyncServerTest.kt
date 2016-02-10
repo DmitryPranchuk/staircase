@@ -1,6 +1,5 @@
 package by.westside.staircase.core.server
 
-import by.westside.staircase.core.http.request.RequestType
 import by.westside.staircase.core.http.response.HttpResponse
 import org.jetbrains.spek.api.Spek
 import java.net.URL
@@ -16,7 +15,7 @@ class SyncServerTest : Spek() { init {
     given("Server listens $port port with listener on /hello GET") {
         val server = startSyncServer(port)
         val returnedString = "Hello World!"
-        server.registerListener("/hello", RequestType.GET, { request ->
+        server.get("/hello", { request ->
             HttpResponse(returnedString)
         })
         on("GET request on /hello") {
@@ -31,7 +30,7 @@ class SyncServerTest : Spek() { init {
     given("Server listens $port port with simple listener on /hello GET") {
         val server = startSyncServer(port)
         val returnedString = "Hello World!"
-        server.registerListener("/hello", RequestType.GET, { request ->
+        server.get("/hello", { request ->
             returnedString
         })
         on("GET request on /hello") {

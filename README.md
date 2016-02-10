@@ -6,7 +6,7 @@ Example of using:
 ```kotlin
 val port = 9000
 val syncServer = startSyncServer(port)
-syncServer.registerListener("/hello", RequestType.GET, { request ->
+syncServer.get("/hello", { request ->
     "Hello from staircase!"
 })
 ```
@@ -17,3 +17,14 @@ curl localhost:9000/hello
 Response
 <br/>
 ```Hello from staircase!```
+
+For custom request type:
+
+```kotlin
+val port = 9000
+val syncServer = startSyncServer(port)
+syncServer.registerListener("/hello", WRequestType.PATCH, { request ->
+    "Hello from staircase!"
+})
+
+```

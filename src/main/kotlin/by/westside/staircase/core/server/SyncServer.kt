@@ -30,8 +30,25 @@ class SyncServer(val port: Int = 80) : Runnable {
         serverSocket.close()
     }
 
+    fun post(path: String, callback: (HttpRequest) -> Any) {
+        registerListener(path, RequestType.POST, callback)
+    }
+
+    fun get(path: String, callback: (HttpRequest) -> Any) {
+        registerListener(path, RequestType.GET, callback)
+    }
+
+    fun put(path: String, callback: (HttpRequest) -> Any) {
+        registerListener(path, RequestType.PUT, callback)
+    }
+
+    fun delete(path: String, callback: (HttpRequest) -> Any) {
+        registerListener(path, RequestType.DELETE, callback)
+    }
+
+
     fun registerListener(path: String, requestType: RequestType, callback: (HttpRequest) -> Any) {
-        if (listeners.get(Method(path, requestType)) == null) {
+        if (listeners[Method(path, requestType)] == null) {
             listeners.put(Method(path, requestType), callback)
         } else {
             throw StaircaseException("Listener for method $requestType $path already registered")
