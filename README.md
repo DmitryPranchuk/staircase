@@ -1,6 +1,12 @@
-# staircase
+#staircase
 Lightweight kotlin based http server
 
+Dependency:
+
+Gradle
+```gradle
+compile 'com.github.DmitryPranchuk:staircase:0.1.0'
+```
 Example of using:
 
 ```kotlin
