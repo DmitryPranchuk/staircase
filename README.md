@@ -5,7 +5,7 @@ Dependency:
 
 Gradle
 ```gradle
-compile 'com.github.DmitryPranchuk:staircase:0.1.0'
+compile 'com.github.cortwave:staircase:0.1.0'
 ```
 Example of using:
 
