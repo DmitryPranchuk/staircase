@@ -5,6 +5,11 @@ Dependency:
 
 Gradle
 ```gradle
+repositories {
+	...
+	maven { url "https://jitpack.io" }
+}
+
 compile 'com.github.cortwave:staircase:0.1.0'
 ```
 Example of using:
